@@ -5,7 +5,7 @@
 
 This repository contains code to recreate all analyses included in Pavlova et al. (submitted), Offspring survival in captive breeding trials supports the benefit of genetic rescue of a critically endangered subspecies from a divergent subspecies.
 
-Supporting data are not currently included in this repository but will be made available on request.
+Supporting data will be made available at https://doi.org/10.26180/22139813 following manuscript acceptance.
 
 
 ## Usage
