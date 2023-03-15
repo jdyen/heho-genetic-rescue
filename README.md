@@ -16,7 +16,9 @@ The `main.R` file loads all data, fits models, and creates all outputs included 
 ## Contact
 
 Study lead: alexandra.pavlova [at] monash.edu
+
 Analysis contacts: katherine.harrisson [at] latrobe.edu.au, jian.yen [at] delwp.vic.gov.au
+
 
 Updated: 15 March 2023
 
