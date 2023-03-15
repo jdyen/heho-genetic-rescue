@@ -28,8 +28,8 @@ breeding_data <- breeding_data %>%
 
 # MCMC settings
 seed <- 35151121
-num_chains <- 2
-num_iter <- 50
+num_chains <- 4
+num_iter <- 10000
 num_cores <- num_chains
 
 # refit models if required
