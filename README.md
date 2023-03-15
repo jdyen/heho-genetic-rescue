@@ -12,9 +12,11 @@ Supporting data are not currently included in this repository but will be made a
 
 The `main.R` file loads all data, fits models, and creates all outputs included in the manuscript. This file uses several helper functions included in `R/utils.R`. The project environment is managed with the `renv` package, which records all packages and versions in the analysis. These packages can be installed locally with `renv::install()`; see the `renv` [website](https://rstudio.github.io/renv/articles/renv.html) for details.
 
+
 ## Contact
 
 Study lead: alexandra.pavlova [at] monash.edu
-Analysis lead: katherine.harrisson [at] latrobe.edu.au
+Analysis contacts: katherine.harrisson [at] latrobe.edu.au, jian.yen [at] delwp.vic.gov.au
 
-Updated: 3 March 2023
+Updated: 15 March 2023
+
