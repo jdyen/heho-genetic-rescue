@@ -218,6 +218,23 @@ extract_random_effects <- function(x, term, model, ...) {
   
 }
 
+# function to calculate quantiles of random effects to create a 
+#    table for supp material
+re_summary_fn <- function(x, name) {
+  x %>% 
+    select(-iter) %>%
+    group_by(group) %>%
+    summarise(
+      name = name,
+      term = unique(term),
+      q2.5 = quantile(value, probs = 0.025),
+      q10 = quantile(value, probs = 0.1),
+      q50 = quantile(value, probs = 0.5),
+      q90 = quantile(value, probs = 0.9),
+      q97.5 = quantile(value, probs = 0.975)
+    )
+}
+
 # function to plot random effects
 plot_random_effects <- function(pars, prob = c(0.8, 0.95), subset = NULL) {
   

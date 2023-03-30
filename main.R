@@ -487,6 +487,12 @@ pars_independentchicks <- extract_parameters(
   model = "independentchicks",
   transform = plogis
 )
+pars_male_independentchicks <- extract_parameters(
+  mod_male_independentchicks,
+  pars = all_pars,
+  model = "male_independentchicks",
+  transform = plogis
+)
 
 # combine these all together so we can multiply the different
 #    stages together
@@ -496,10 +502,67 @@ pars_all <- bind_rows(
   pars_eggsfertile,
   pars_hatchedeggs,
   pars_chicksfledged, 
-  pars_independentchicks
+  pars_independentchicks,
+  pars_male_independentchicks
 )
 
-# claculate expected number of independent chicks by cross type
+# repeat but on link scale
+pars_nestbuilt_link <- extract_parameters(
+  mod_nestbuilt,
+  pars = all_pars[-1],
+  model = "nestbuilt",
+  transform = identity
+)
+pars_clutchsize_link <- extract_parameters(
+  mod_clutchsize,
+  pars = all_pars[-1],
+  model = "clutchsize",
+  transform = identity
+)
+pars_eggsfertile_link <- extract_parameters(
+  mod_eggsfertile,
+  pars = all_pars[-1],
+  model = "eggsfertile",
+  transform = identity
+)
+pars_hatchedeggs_link <- extract_parameters(
+  mod_hatchedeggs,
+  pars = all_pars[-1],
+  model = "hatchedeggs",
+  transform = identity
+)
+pars_chicksfledged_link <- extract_parameters(
+  mod_chicksfledged,
+  pars = all_pars[-1],
+  model = "chicksfledged",
+  transform = identity
+)
+pars_independentchicks_link <- extract_parameters(
+  mod_independentchicks,
+  pars = all_pars[-1],
+  model = "independentchicks",
+  transform = identity
+)
+pars_male_independentchicks_link <- extract_parameters(
+  mod_male_independentchicks,
+  pars = all_pars[-1],
+  model = "male_independentchicks",
+  transform = identity
+)
+
+# combine these all together so we can multiply the different
+#    stages together
+pars_all_link <- bind_rows(
+  pars_nestbuilt_link,
+  pars_clutchsize_link,
+  pars_eggsfertile_link,
+  pars_hatchedeggs_link,
+  pars_chicksfledged_link, 
+  pars_independentchicks_link,
+  pars_male_independentchicks_link
+)
+
+# calculate expected number of independent chicks by cross type
 pars_all <- pars_all %>%
   pivot_wider(
     id_cols = c(iter, group),
@@ -521,8 +584,26 @@ pars_all <- pars_all %>%
       hatchedeggs, 
       chicksfledged, 
       independentchicks, 
+      male_independentchicks,
       expected_independent_chicks,
       expected_independent_chicks_reduced_stages
+    )
+  )
+pars_all_link <- pars_all_link %>%
+  pivot_wider(
+    id_cols = c(iter, group),
+    names_from = model,
+    values_from = value
+  ) %>%
+  pivot_longer(
+    cols = c(
+      nestbuilt, 
+      clutchsize, 
+      eggsfertile, 
+      hatchedeggs, 
+      chicksfledged, 
+      independentchicks,
+      male_independentchicks
     )
   )
 
@@ -536,10 +617,22 @@ raw_values <- pars_all %>%
     q90 = quantile(value, probs = 0.9),
     q97.5 = quantile(value, probs = 0.975)
   ) %>%
+  arrange(name, group) %>%
+  filter(name != "expected_independent_chicks")
+raw_values_link <- pars_all_link %>%
+  group_by(group, name) %>%
+  summarise(
+    q2.5 = quantile(value, probs = 0.025),
+    q10 = quantile(value, probs = 0.1),
+    q50 = quantile(value, probs = 0.5),
+    q90 = quantile(value, probs = 0.9),
+    q97.5 = quantile(value, probs = 0.975)
+  ) %>%
   arrange(name, group)
 
 # save to a file
 write.csv(raw_values, file = "outputs/tables/Table_raw_values.csv")
+write.csv(raw_values_link, file = "outputs/tables/Table_raw_values_link_scale.csv")
 
 # calculate probability that overall outcomes are greater than CC cross type
 expected_chicks_by_crosstype <- compare_cross_type(
@@ -640,6 +733,47 @@ re_male_independent_chicks <- lapply(
   .x = mod_male_independentchicks,
   .y = "male_independent_chicks"
 )
+
+# summarise random effects for a table
+re_nestbuilt_table <- lapply(re_nestbuilt, re_summary_fn, name = "nestbuilt")
+re_nestbuilt_table <- bind_rows(re_nestbuilt_table)
+re_clutchsize_table <- lapply(
+  re_clutchsize, re_summary_fn, name = "clutchsize"
+)
+re_clutchsize_table <- bind_rows(re_clutchsize_table)
+re_eggsfertile_table <- lapply(
+  re_eggsfertile, re_summary_fn, name = "eggsfertile"
+)
+re_eggsfertile_table <- bind_rows(re_eggsfertile_table)
+re_hatchedeggs_table <- lapply(
+  re_hatchedeggs, re_summary_fn, name = "hatchedeggs"
+)
+re_hatchedeggs_table <- bind_rows(re_hatchedeggs_table)
+re_chicksfledged_table <- lapply(
+  re_chicksfledged, re_summary_fn, name = "chicksfledged"
+)
+re_chicksfledged_table <- bind_rows(re_chicksfledged_table)
+re_independent_chicks_table <- lapply(
+  re_independent_chicks, re_summary_fn, name = "independentchicks"
+)
+re_independent_chicks_table <- bind_rows(re_independent_chicks_table)
+re_male_independent_chicks_table <- lapply(
+  re_male_independent_chicks, re_summary_fn, name = "male_independentchicks"
+)
+re_male_independent_chicks_table <- bind_rows(re_male_independent_chicks_table)
+re_table <- bind_rows(
+  re_nestbuilt_table,
+  re_clutchsize_table,
+  re_eggsfertile_table,
+  re_hatchedeggs_table,
+  re_chicksfledged_table,
+  re_independent_chicks_table,
+  re_male_independent_chicks_table
+)
+re_table <- re_table %>%
+  select(name, term, group, starts_with("q")) %>%
+  arrange(name, term, group)
+write.csv(re_table, file = "outputs/tables/Table_random_effect_raw_values.csv")
 
 # and plot these for each model
 random_plots_nestbuilt <- lapply(re_nestbuilt, plot_random_effects)
